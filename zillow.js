@@ -1,6 +1,6 @@
 //required declarations
-var express = require("express");
-var app = express();
+const express = require("express");
+const app = express();
 
 //root default
 app.get('/', function(req, res){
@@ -15,13 +15,13 @@ app.get('/v1/zillow', function(req, res){
 // Write a server called zillow.js that serves JSON data when it receives a GET request to the path ’/v1/zillow/zestimate’. 
 app.get('/v1/zillow/zestimate', (req, res) => {
     // Expect the request to contain a query string with a keys ’sqft’, ’bed’, and ’bath’ all of which will be required integers.
-    const {sqft, bed, bath} = req.query;
+    var {sqft, bed, bath} = req.query;
 
     //Zestimate == sqft * bed * bath * 10 and you should return to the use JSON in the following format: {zestimate: Number }
     var zestimate = sqft * bed * bath * 10;
 
-    if(zestimate.parameter == null){
-        // why does this refuse to work
+    // all of which will be required integers.
+    if(isNaN(sqft) || !sqft || isNaN(bed) || !bed || isNaN(bath) || !bath){
         res.status(404).send("Invalid argument").json([]);
     }else{
         // The JSON response should contain only the ‘zestimate’ property:
@@ -33,18 +33,17 @@ app.get('/v1/zillow/zestimate', (req, res) => {
 // Add a second endpoint at the path ‘/v1/zillow/houses’ that accepts an optional parameter ‘city‘.
 app.get('/v1/zillow/houses', (req, res) => {
     // If city is provided as a parameter, the return all houses that match the given city.
-    const city = req.query.city;
+    var city = req.query.city;
 
     if(!city){
         // If no city parameter is provided, then return an empty array [].
-        res.status(404).send("No city entered").json([]);
+        res.status(200).json([]);
     }else{
-        const resultsArr = sampleDB.filter(sampleDB => sampleDB.city === city);
+        var resultsArr = sampleDB.filter(sampleDB => sampleDB.city === city);
 
         if(resultsArr.length === 0){
             res.status(200).json([]);
-        }
-        if(resultsArr != null){
+        }else{
             res.status(200).json(resultsArr);
         }}});
 // For example: /v1/zillow/houses?city=baltimore
@@ -60,19 +59,17 @@ app.get('/v1/zillow/houses', (req, res) => {
 // Add a third endpoint at the path ‘/v1/zillow/prices’ that accepts a requiredparameter ‘usd‘.
 // This will return all houses equal to or under a given price. 
 app.get('/v1/zillow/prices', (req, res) => {
-    const usd = req.query.usd;
+    var usd = req.query.usd;
 
-    if(!usd){
+    if(isNaN(usd) || !usd){
         res.status(404).send("Invalid argument for price point");
-    }
-    if(usd){
-        const resultsArr = sampleDB.filter(sampleDB => sampleDB.price <= usd);
+    }else{
+        var resultsArr = sampleDB.filter(sampleDB => sampleDB.price <= usd);
 
         if(resultsArr.length === 0){
             // If no houses are under the given price, return an empty array: []
             res.status(200).json([]);
-        }
-        if(resultsArr != null){
+        }else{
             res.status(200).json(resultsArr);
         }}});
 
